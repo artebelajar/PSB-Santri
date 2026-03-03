@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel PSB</title>
+  </head>
+  <body>
+    <div class="loginArea">
+      <h2>Login Admin</h2>
+      <input type="text" name="user" id="user" placeholder="Username" /><br />
+      <input
+        type="password"
+        name="pass"
+        id="pass"
+        placeholder="Password"
+      /><br />
+      <button onclick="login()">Login</button>
+    </div>
+    <div class="adminContent" style="display: none">
+      <h2>Data Pendaftaran</h2>
+      <button onclick="logout()">Logout</button>
+      <hr />
+      <table border="1" cellpadding="10" cellspacing="0" id="tabelSantri">
+        <thead>
+          <tr>
+            <th>Nama</th>
+            <th>Gender</th>
+            <th>Hafalan</th>
+            <th>Wali</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <script>
+      async function login() {
+        const formData = new FormData();
+        formData.append("username", document.getElementById("user").value);
+        formData.append("password", document.getElementById("pass").value);
+
+        const res = await fetch("/api/login", {
+          method: "POST",
+          body: formData,
+        });
+        if (res.ok) {
+          checkAuth();
+        } else {
+          alert("Login Gagal!");
+        }
+      }
+
+      async function checkAuth() {
+        const res = await fetch("/api/checkAuth");
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById("loginArea").style.display = "none";
+          document.querySelector(".adminContent").style.display = "block";
+          const tbody = document.querySelector("#tabelSantri tbody");
+          tbody.innerHTML = "";
+          tbody.innerHTML = data
+            .map(
+              (s) => `
+                    <tr>
+                        <td>${s.nama}</td>
+                        <td>${s.gender}</td>
+                        <td>${s.hafalan}</td>
+                        <td>${s.wali}</td>
+                    </tr>
+                `,
+            )
+            .join("");
+        } else {
+          alert("Login Gagal!");
+        }
+      }
+
+      async function logout() {
+        const res = await fetch("/api/logout");
+        location.reload();
+      }
+
+      checkAuth();
+    </script>
+  </body>
+</html>
