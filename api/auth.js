@@ -1,6 +1,6 @@
 import { getCookie } from "@hono/node-server/cookie";
 import { verify } from "hono/jwt";
-import { db } from "./db.js";
+import { db } from "./db/index.js";
 import { santri } from "./schema.js";
 import { eq } from "drizzle-orm";
 import "dotenv/config";
