@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import { db } from "../db/index.js";
-import { admins, santri } from "../db/schema.js";
+import { db } from "./db/index.js";
+import { admins, santri } from "./db/schema.js";
 import { setCookie, getCookie, deleteCookie } from "hono/cookie";
 import { sign, verify } from "hono/jwt";
 import bcrypt from "bcryptjs";
@@ -21,7 +21,7 @@ if (!process.env.RECAPTCHA_SECRET) {
   console.warn("⚠️  PERINGATAN: RECAPTCHA_SECRET tidak diset di .env! Fitur captcha tidak akan berfungsi");
 }
 
-app.use("*/", serveStatic({ root: "./public" }));
+app.use("/*", serveStatic({ root: "./public" }));
 
 app.get("/api/hello", (c) => c.json({ message: "API PSB Aktif!" }));
 
@@ -80,26 +80,45 @@ app.post("/api/submit", async (c) => {
   }
 });
 
+
+//masih error
 app.post("/api/login", async (c) => {
-  const { username, password } = await c.req.json();
-  const [user] = await db
-    .select()
-    .from(admins)
-    .where(eq(admins.username, username));
+  try {
+    const { username, password } = await c.req.json();
 
-  if (user && (await bcrypt.compare(password, user.password))) {
-    const token = await sign({ user: user.username, exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24}, SECRET, JWT_ALGORITHM);
-    const isProd = process.env.NODE_ENV === "production";
-    setCookie(c, "admin_session", token, {
-      httpOnly: true,
-      secure: isProd,
-      sameSite: "lax",
-      maxAge: Math.floor(Date.now() / 1000) + 60 * 60 * 24
-    });
+    const [user] = await db
+      .select()
+      .from(admins)
+      .where(eq(admins.username, username));
 
-    return c.json({ message: "Login berhasil!" });
+    if (user && (await bcrypt.compare(password, user.password))) {
+      const token = await sign(
+        { 
+          user: user.username, 
+          exp: Math.floor(Date.now() / 1000) + (60 * 60 * 24) 
+        }, 
+        SECRET, 
+        JWT_ALGORITHM
+      );
+
+      const isProd = process.env.NODE_ENV === "production";
+
+      setCookie(c, "admin_session", token, {
+        httpOnly: true,
+        secure: isProd,
+        sameSite: "lax",
+        maxAge: 60 * 60 * 24 
+      });
+
+      return c.json({ message: "Login berhasil!" });
+    }
+
+    return c.json({ message: "Username atau password salah" }, 401);
+
+  } catch (error) {
+    console.error("Login Error:", error);
+    return c.json({ error: "Format data salah atau gangguan server" }, 400);
   }
-  return c.json({ message: "gagal" }, 401);
 });
 
 app.get("/api/admin/santri", async (c) => {
@@ -120,7 +139,8 @@ app.get("/api/logout", (c) => {
   return c.json({ message: "Sesi berakhir" });
 });
 
-const port = 9192;
+
+const port = 8912;
 serve({ fetch: app.fetch, port: port });
 console.log(`Server berjalan di http://localhost:${port}`);
 export default app;

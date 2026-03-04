@@ -6,18 +6,18 @@
     <title>Admin Panel PSB</title>
   </head>
   <body>
-    <div class="loginArea">
+    <div id="loginArea">
       <h2>Login Admin</h2>
-      <input type="text" name="user" id="user" placeholder="Username" /><br />
+      <input type="text" name="username" id="username" placeholder="Username" /><br />
       <input
         type="password"
-        name="pass"
-        id="pass"
+        name="password"
+        id="password"
         placeholder="Password"
       /><br />
       <button onclick="login()">Login</button>
     </div>
-    <div class="adminContent" style="display: none">
+    <div id="adminContent" style="display: none">
       <h2>Data Pendaftaran</h2>
       <button onclick="logout()">Logout</button>
       <hr />
@@ -33,16 +33,21 @@
         <tbody></tbody>
       </table>
     </div>
+
     <script>
       async function login() {
-        const formData = new FormData();
-        formData.append("username", document.getElementById("user").value);
-        formData.append("password", document.getElementById("pass").value);
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
+        console.log(username, password);
 
         const res = await fetch("/api/login", {
           method: "POST",
-          body: formData,
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ username: username, password: password }),
         });
+
         if (res.ok) {
           checkAuth();
         } else {
@@ -51,18 +56,18 @@
       }
 
       async function checkAuth() {
-        const res = await fetch("/api/checkAuth");
+        const res = await fetch("/api/admin/santri");
         if (res.ok) {
           const data = await res.json();
           document.getElementById("loginArea").style.display = "none";
-          document.querySelector(".adminContent").style.display = "block";
+          document.getElementById("adminContent").style.display = "block";
           const tbody = document.querySelector("#tabelSantri tbody");
           tbody.innerHTML = "";
           tbody.innerHTML = data
             .map(
               (s) => `
                     <tr>
-                        <td>${s.nama}</td>
+                        <td>${s.name}</td>
                         <td>${s.gender}</td>
                         <td>${s.hafalan}</td>
                         <td>${s.wali}</td>
@@ -70,9 +75,7 @@
                 `,
             )
             .join("");
-        } else {
-          alert("Login Gagal!");
-        }
+        } 
       }
 
       async function logout() {
