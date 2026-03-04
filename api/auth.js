@@ -1,4 +1,4 @@
-import { getCookie } from "@hono/node-server/cookie";
+import { getCookie } from "hono/cookie";
 import { verify } from "hono/jwt";
 import { db } from "../db/index.js";
 import { santri } from "../db/schema.js";
