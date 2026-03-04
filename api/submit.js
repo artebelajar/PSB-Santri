@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { z } from "zod";
-import { db } from "./db/index.js";
-import { admins, santri } from "./schema.js";
+import { db } from "../db/index.js";
+import { admins, santri } from "../schema.js";
 import { setCookie } from "hono/cookie";
 import { sign } from "hono/jwt";
 import bcrypt from "bcryptjs";
