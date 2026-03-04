@@ -1,4 +1,12 @@
+import { getCookie } from "@hono/node-server/cookie";
+import { verify } from "hono/jwt";
+import { db } from "./db.js";
+import { santri } from "./schema.js";
+import { eq } from "drizzle-orm";
+import "dotenv/config";
 
+const SECRET = process.env.JWT_SECRET || "default_secret";
+const JWT_ALGORITHM = "HS256";
 
 export const auth = async (c) => {
   const token = getCookie(c, "admin_session");
