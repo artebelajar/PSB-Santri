@@ -1,4 +1,4 @@
-import { deleteCookie } from "@hono/node-server/cookie";
+import { deleteCookie } from "hono/cookie";
 
 export const logout = (c) => {
   deleteCookie(c, "admin_session");
