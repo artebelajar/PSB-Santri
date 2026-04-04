@@ -31,11 +31,6 @@ app.use("/*", serveStatic({ root: "./public" }));
 
 app.get("/api/hello", (c) => c.json({ message: "API PSB Aktif!" }));
 
-app.onError((err, c) => {
-  console.error("Error:", err);
-  return c.json({ error: "Terjadi kesalahan pada server" }, 500);
-});
-
 app.post("/api/submit", submit);
 
 app.post("/api/login", login);
@@ -43,6 +38,11 @@ app.post("/api/login", login);
 app.get("/api/admin/santri", auth);
 
 app.get("/api/logout", logout);
+
+app.onError((err, c) => {
+  console.error("Error:", err);
+  return c.json({ error: "Terjadi kesalahan pada server" }, 500);
+});
 
 const port = 8912;
 serve({ fetch: app.fetch, port: port });

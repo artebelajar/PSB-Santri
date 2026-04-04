@@ -13,23 +13,25 @@ export const submit = async (c) => {
     const body = await c.req.parseBody();
     const schema = z.object({
       name: z.string().min(3, "minimal 3 karakter"),
-      gender: z.enum(["Ikhwan", "Akhwat"], {
+      gender: z.enum(["ikhwan", "akhwat"], {
         errorMap: () => ({ message: "Pilih gender yang valid" }),
       }),
       hafalan: z.coerce.number().min(0, "hafalan tidak boleh minus"),
       wali: z.string().min(3, "nama wali wajib diisi"),
-      "g-recaptha-response": z
+      "g-recaptcha-response": z
         .string()
         .min(1, "centang Captcha terlebih dahulu!"),
     });
 
     const parse = schema.safeParse(body);
-    if (!parse.success)
-      return c.json({ error: parse.error.errors[0].message }, 400);
-
+    if (!parse.success) {
+      const errorMessage = parse.error.issues[0]?.message || "Validasi gagal";
+      return c.json({ error: errorMessage }, 400);
+    }
+    
     const formData = new URLSearchParams();
     formData.append("secret", process.env.RECAPTCHA_SECRET);
-    formData.append("response", parse.data["g-recaptha-response"]);
+    formData.append("response", parse.data["g-recaptcha-response"]);
 
     const verify = await fetch(
       "https://www.google.com/recaptcha/api/siteverify",
@@ -54,6 +56,10 @@ export const submit = async (c) => {
 
     return c.json({ message: "Pendaftaran Berhasil!" }, 200);
   } catch (error) {
-    return c.json({ error: "terjadi kesalahan sistem" }, 500);
+    console.error("Detail error:", error);
+    return c.json(
+      { error: error.message || "terjadi kesalahan sistem di submit" },
+      500,
+    );
   }
 };
