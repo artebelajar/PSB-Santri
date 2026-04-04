@@ -4,59 +4,224 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Admin Panel PSB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+      :root {
+        --primary-blue: #0a192f;
+        --accent-blue: #112240;
+        --text-white: #e6f1ff;
+        --gold-muted: #c5a059;
+        --glass: rgba(255, 255, 255, 0.03);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: radial-gradient(circle at bottom left, #112240, #0a192f);
+        color: var(--text-white);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      /* Container Utama */
+      .admin-wrapper {
+        width: 100%;
+        max-width: 900px;
+        background: var(--glass);
+        backdrop-filter: blur(12px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        animation: fadeIn 0.8s ease-out;
+      }
+
+      @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+      }
+
+      h2 {
+        font-family: 'Playfair Display', serif;
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        text-align: center;
+        background: linear-gradient(to right, #fff, var(--gold-muted));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+
+      /* Styling Login Area */
+      #loginArea {
+        max-width: 350px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      #loginArea input {
+        width: 100%;
+        padding: 14px;
+        margin-bottom: 15px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 12px;
+        color: white;
+        outline: none;
+        transition: var(--transition);
+      }
+
+      #loginArea input:focus {
+        border-color: var(--gold-muted);
+        background: rgba(255,255,255,0.1);
+      }
+
+      /* Tombol */
+      button {
+        cursor: pointer;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: var(--transition);
+      }
+
+      #loginArea button {
+        width: 100%;
+        padding: 14px;
+        background: var(--text-white);
+        color: var(--primary-blue);
+      }
+
+      .btn-logout {
+        padding: 8px 20px;
+        background: transparent;
+        border: 1px solid #ff4d4d;
+        color: #ff4d4d;
+        float: right;
+        margin-bottom: 20px;
+      }
+
+      .btn-logout:hover {
+        background: #ff4d4d;
+        color: white;
+        box-shadow: 0 0 15px rgba(255, 77, 77, 0.3);
+      }
+
+      /* Styling Tabel */
+      .table-container {
+        width: 100%;
+        overflow-x: auto;
+        margin-top: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+
+      th {
+        background: rgba(255, 255, 255, 0.07);
+        color: var(--gold-muted);
+        text-align: left;
+        padding: 16px;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      td {
+        padding: 16px;
+        border-bottom: 1px solid var(--glass-border);
+        font-size: 0.95rem;
+        color: #ccd6f6;
+      }
+
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+        color: white;
+      }
+
+      hr {
+        border: none;
+        height: 1px;
+        background: var(--glass-border);
+        margin: 20px 0;
+        clear: both;
+      }
+
+      /* Mockup Animation untuk elemen tabel */
+      tbody tr {
+        animation: slideIn 0.5s ease-out forwards;
+        opacity: 0;
+      }
+
+      @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-10px); }
+        to { opacity: 1; transform: translateX(0); }
+      }
+    </style>
   </head>
   <body>
-    <div id="loginArea">
-      <h2>Login Admin</h2>
-      <input
-        type="text"
-        name="username"
-        id="username"
-        placeholder="Username"
-      /><br />
-      <input
-        type="password"
-        name="password"
-        id="password"
-        placeholder="Password"
-      /><br />
-      <button onclick="login()">Login</button>
-    </div>
-    <div id="adminContent" style="display: none">
-      <h2>Data Pendaftaran</h2>
-      <button onclick="logout()">Logout</button>
-      <hr />
-      <table border="1" cellpadding="10" cellspacing="0" id="tabelSantri">
-        <thead>
-          <tr>
-            <th>Nama</th>
-            <th>Gender</th>
-            <th>Hafalan</th>
-            <th>Wali</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+
+    <div class="admin-wrapper">
+      <div id="loginArea">
+        <h2>Login Admin</h2>
+        <input type="text" name="username" id="username" placeholder="Username" />
+        <input type="password" name="password" id="password" placeholder="Password" />
+        <button onclick="login()">Masuk ke Panel</button>
+      </div>
+
+      <div id="adminContent" style="display: none">
+        <button class="btn-logout" onclick="logout()">Logout</button>
+        <h2>Data Pendaftaran Santri</h2>
+        
+        <hr />
+        
+        <div class="table-container">
+          <table id="tabelSantri">
+            <thead>
+              <tr>
+                <th>Nama Lengkap</th>
+                <th>Gender</th>
+                <th>Hafalan</th>
+                <th>Wali</th>
+              </tr>
+            </thead>
+            <tbody>
+              </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <script>
       async function login() {
         const username = document.getElementById("username").value;
         const password = document.getElementById("password").value;
-        console.log(username, password);
-
+        
         const res = await fetch("/api/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ username: username, password: password }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, password }),
         });
 
         if (res.ok) {
           checkAuth();
         } else {
-          alert("Login Gagal!");
+          alert("Akses Ditolak: Username atau Password salah.");
         }
       }
 
@@ -66,25 +231,25 @@
           const data = await res.json();
           document.getElementById("loginArea").style.display = "none";
           document.getElementById("adminContent").style.display = "block";
+          
           const tbody = document.querySelector("#tabelSantri tbody");
-          tbody.innerHTML = "";
           tbody.innerHTML = data
             .map(
-              (s) => `
-                    <tr>
-                        <td>${s.name}</td>
-                        <td>${s.gender}</td>
-                        <td>${s.hafalan}</td>
-                        <td>${s.wali}</td>
-                    </tr>
-                `,
+              (s, index) => `
+                <tr style="animation-delay: ${index * 0.1}s">
+                    <td><strong>${s.name}</strong></td>
+                    <td>${s.gender === 'ikhwan' ? 'Laki-laki' : 'Perempuan'}</td>
+                    <td>${s.hafalan} Juz</td>
+                    <td>${s.wali}</td>
+                </tr>
+              `
             )
             .join("");
         }
       }
 
       async function logout() {
-        const res = await fetch("/api/logout");
+        await fetch("/api/logout");
         location.reload();
       }
 
