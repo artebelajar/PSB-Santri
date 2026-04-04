@@ -44,7 +44,7 @@ app.get("/api/admin/santri", auth);
 
 app.get("/api/logout", logout);
 
-// const port = 8912;
-// serve({ fetch: app.fetch, port: port });
-// console.log(`Server berjalan di http://localhost:${port}`);
+const port = 8912;
+serve({ fetch: app.fetch, port: port });
+console.log(`Server berjalan di http://localhost:${port}`);
 export default app;
